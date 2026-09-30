@@ -100,3 +100,20 @@ uvicorn app.main:app --reload --port 8000
 ```
 
 Documentacion interactiva: http://localhost:8000/docs
+
+## Pruebas
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -q -r requirements.txt -r requirements-dev.txt
+
+.venv/bin/python -m pytest                     # 5 unitarias (no necesita el stack)
+RUN_INTEGRATION=1 .venv/bin/python -m pytest   # + 6 de integración contra :8000
+```
+
+Las unitarias generan una clave RSA en memoria y comprueban los claims
+(`sub`, `dn`, `iss`, `aud`, `iat`, `nbf`, `exp` a 30 minutos), que el header sea
+`RS256`, y que un token firmado con **otra** clave o con `alg:none` sea
+rechazado. Las de integración hacen login real contra LDAP (usuario válido,
+contraseña incorrecta, usuario inexistente) y verifican que el mensaje de error
+no revela si el usuario existe.
