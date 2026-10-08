@@ -54,11 +54,14 @@ Respuestas: `200` con el token · `401` credenciales invalidas · `422` faltan c
 ## Como valida contra LDAP
 
 1. Construye el DN del usuario: `uid=<username>,ou=users,dc=example,dc=com`.
-2. Intenta `conn.bind(user_dn, password)`.
+2. Intenta `conn.bind(user_dn, password)` **por LDAPS** (TLS con la CA propia,
+   `LDAP_CA_FILE`): la verificación incluye cadena de firma y hostname.
 3. Si el bind falla, devuelve `401` generico (no revela si el usuario existe).
 4. Si tiene exito, firma el JWT con la clave privada RSA.
 
 ```python
+tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=LDAP_CA_FILE)
+server = Server(LDAP_HOST, port=LDAP_PORT, get_info=ALL, use_ssl=True, tls=tls)
 connection = Connection(server, user=user_dn, password=password, raise_exceptions=False)
 authenticated = connection.bind()
 ```
@@ -67,8 +70,10 @@ authenticated = connection.bind()
 
 | Variable | Default | Descripcion |
 | --- | --- | --- |
-| `LDAP_HOST` | `openldap` | Servidor LDAP |
-| `LDAP_PORT` | `389` | Puerto |
+| `LDAP_HOST` | `openldap` | Servidor LDAP (hostname TLS: `ldap.example.com`) |
+| `LDAP_PORT` | `636` | Puerto (LDAPS) |
+| `LDAP_USE_TLS` | `1` | `1` = LDAPS obligatorio, `0` = conexión plana (solo debug) |
+| `LDAP_CA_FILE` | `/secrets/ldap_ca.crt` | CA propia que firmó el certificado del servidor |
 | `LDAP_BASE_DN` | `dc=example,dc=com` | Base del árbol |
 | `LDAP_USERS_OU` | `ou=users` | OU donde viven los usuarios |
 | `JWT_PRIVATE_KEY_FILE` | `/secrets/jwt_private.pem` | Clave privada (montada `:ro`) |

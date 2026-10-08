@@ -1,10 +1,11 @@
 """LDAP authentication + RS256 token issuing."""
 
 import datetime as dt
+import ssl
 from functools import lru_cache
 
 import jwt
-from ldap3 import ALL, Connection, Server
+from ldap3 import ALL, Connection, Server, Tls
 
 from .config import (
     JWT_AUDIENCE,
@@ -12,8 +13,10 @@ from .config import (
     JWT_ISSUER,
     JWT_PRIVATE_KEY_FILE,
     LDAP_BASE_DN,
+    LDAP_CA_FILE,
     LDAP_HOST,
     LDAP_PORT,
+    LDAP_USE_TLS,
     LDAP_USERS_OU,
     read_secret_file,
 )
@@ -29,10 +32,21 @@ def private_key() -> str:
     return read_secret_file(JWT_PRIVATE_KEY_FILE)
 
 
+def _ldap_server() -> Server:
+    """Servidor LDAP. Con TLS obligatorio: verifica la CA y el hostname."""
+    if not LDAP_USE_TLS:
+        return Server(LDAP_HOST, port=LDAP_PORT, get_info=ALL)
+    tls = Tls(
+        validate=ssl.CERT_REQUIRED,
+        ca_certs_file=LDAP_CA_FILE,
+    )
+    return Server(LDAP_HOST, port=LDAP_PORT, get_info=ALL, use_ssl=True, tls=tls)
+
+
 def authenticate_ldap(username: str, password: str) -> tuple[bool, str]:
-    """Try to bind as the user. Returns (ok, dn)."""
+    """Try to bind as the user over LDAPS. Returns (ok, dn)."""
     dn = build_user_dn(username)
-    server = Server(LDAP_HOST, port=LDAP_PORT, get_info=ALL)
+    server = _ldap_server()
     connection = Connection(
         server, user=dn, password=password, auto_bind=False, raise_exceptions=False
     )

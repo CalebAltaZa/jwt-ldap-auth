@@ -13,7 +13,10 @@ def env_int(name: str, default: int) -> int:
 
 # --- LDAP -------------------------------------------------------------------
 LDAP_HOST = os.getenv("LDAP_HOST", "openldap")
-LDAP_PORT = env_int("LDAP_PORT", 389)
+LDAP_PORT = env_int("LDAP_PORT", 636)
+LDAP_USE_TLS = os.getenv("LDAP_USE_TLS", "1") == "1"
+# CA propia que firmó el certificado del servidor LDAP (montado en /secrets).
+LDAP_CA_FILE = os.getenv("LDAP_CA_FILE", "/secrets/ldap_ca.crt")
 LDAP_BASE_DN = os.getenv("LDAP_BASE_DN", "dc=example,dc=com")
 LDAP_USERS_OU = os.getenv("LDAP_USERS_OU", "ou=users")
 

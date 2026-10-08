@@ -4,6 +4,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from .accesslog import AccessLogMiddleware, configure_access_logger
 from .config import JWT_AUDIENCE, JWT_EXPIRE_MINUTES, JWT_ISSUER
 from .security import authenticate_ldap, create_access_token
 
@@ -16,6 +17,8 @@ app = FastAPI(
     version="1.0.0",
 )
 
+configure_access_logger("/var/log/auth/access.log")
+app.add_middleware(AccessLogMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
