@@ -29,3 +29,7 @@ JWT_PUBLIC_KEY_FILE = os.getenv("JWT_PUBLIC_KEY_FILE", "/secrets/jwt_public.pem"
 JWT_ISSUER = os.getenv("JWT_ISSUER", "jwt-ldap-auth")
 JWT_AUDIENCE = os.getenv("JWT_AUDIENCE", "jwt-items")
 JWT_EXPIRE_MINUTES = env_int("JWT_EXPIRE_MINUTES", 30)
+
+# --- Documentacion interactiva (Swagger/ReDoc/OpenAPI) -----------------------
+# Deshabilitada por defecto: no exponer el esquema de la API (hallazgo de Nuclei).
+DOCS_ENABLED = os.getenv("DOCS_ENABLED", "0").lower() in ("1", "true", "yes")
