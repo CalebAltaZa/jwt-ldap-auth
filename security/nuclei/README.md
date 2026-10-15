@@ -79,7 +79,27 @@ Cabeceras ausentes: `Strict-Transport-Security`, `Content-Security-Policy`,
 
 ## Estado
 
-- [ ] Forzar TLS 1.3/1.2 en LDAPS
-- [ ] Deshabilitar/proteger `/docs`, `/redoc` y `/openapi.json`
-- [ ] Añadir cabeceras de seguridad
-- [x] CA propia documentada como riesgo aceptado (entorno local)
+Correcciones aplicadas en este repositorio, **cada una con su prueba**:
+
+- [x] Deshabilitar/proteger `/docs`, `/redoc` y `/openapi.json` por defecto
+      (`DOCS_ENABLED=1` para habilitarlos en desarrollo).
+      Validado por [`tests/test_docs_disabled.py`](../../tests/test_docs_disabled.py)
+      y [`security/evidence/fix-docs-disabled.md`](../evidence/fix-docs-disabled.md).
+- [x] Middleware de cabeceras de seguridad (`security_headers.py`).
+      Validado por [`tests/test_security_headers.py`](../../tests/test_security_headers.py)
+      y [`security/evidence/fix-security-headers.md`](../evidence/fix-security-headers.md).
+
+Hallazgos de LDAP evaluados y **aceptados como riesgo** (no aplican a este repo):
+
+- [x] **`untrusted-root-certificate` (low):** es la **CA propia** del laboratorio
+      (generada por `setup.sh`). El cliente `auth` sí confía en ella
+      (`Tls(validate=CERT_REQUIRED, ca_certs_file=/secrets/ldap_ca.crt)`); fuera
+      del entorno aparece como "desconocida". No es explotable en este contexto.
+- [x] **`tls-version` (info, TLS 1.2):** TLS 1.2 sigue siendo seguro y
+      recomendado. Forzar TLS 1.3 requiere configuración **del servidor slapd**
+      (`olcTLSProtocolMin: 0x0304` en OpenLDAP), que vive en el `docker-compose.yml`
+      del proyecto (fuera de este repositorio). Se documenta como mejora opcional.
+
+> Tras las correcciones hay que reconstruir la imagen
+> (`docker compose build auth && docker compose up -d auth`) y volver a lanzar
+> Nuclei para confirmar que los hallazgos desaparecen.
