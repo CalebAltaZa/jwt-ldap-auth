@@ -1,5 +1,5 @@
-"""Valida la corrección del hallazgo de Nuclei `redoc-api-docs`.
-Con `DOCS_ENABLED=0` (por defecto) la Swagger UI ni ReDoc deben existir: /docs y /redoc responden 404.
+"""Valida la corrección del hallazgo de Nuclei `openapi`.
+Con `DOCS_ENABLED=0` (por defecto) la Swagger UI, ReDoc y el esquema OpenAPI no deben existir: /docs, /redoc y /openapi.json responden 404.
 
 Requiere el stack levantado:
 
@@ -17,7 +17,7 @@ AUTH_URL = os.getenv("AUTH_URL", "http://localhost:8000")
 @pytest.mark.skipif(
     not RUN_INTEGRATION, reason="requiere RUN_INTEGRATION=1 y el stack levantado"
 )
-@pytest.mark.parametrize("path", ["/docs", "/redoc"])
+@pytest.mark.parametrize("path", ["/docs", "/redoc", "/openapi.json"])
 def test_documentacion_no_accesible(path):
     import httpx
 
