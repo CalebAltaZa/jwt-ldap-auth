@@ -10,6 +10,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 # Cabeceras de endurecimiento. Para una API JSON la CSP puede ser restrictiva.
 SECURITY_HEADERS: dict[bytes, bytes] = {
     b"x-content-type-options": b"nosniff",
+    b"x-frame-options": b"DENY",
 }
 
 
