@@ -79,7 +79,35 @@ Cabeceras ausentes: `Strict-Transport-Security`, `Content-Security-Policy`,
 
 ## Estado
 
-- [ ] Forzar TLS 1.3/1.2 en LDAPS
-- [ ] Deshabilitar/proteger `/docs`, `/redoc` y `/openapi.json`
-- [ ] Añadir cabeceras de seguridad
-- [x] CA propia documentada como riesgo aceptado (entorno local)
+Correcciones aplicadas en este repositorio, **cada una con su prueba**:
+
+- [x] Deshabilitar la Swagger UI (`swagger-api`, `/docs`).
+      Validado por [`tests/test_docs_disabled.py`](../../tests/test_docs_disabled.py)
+      y [`security/evidence/fix-swagger-api.md`](../evidence/fix-swagger-api.md).
+- [x] Deshabilitar ReDoc (`redoc-api-docs`, `/redoc`).
+      Validado por [`tests/test_docs_disabled.py`](../../tests/test_docs_disabled.py)
+      y [`security/evidence/fix-redoc-api-docs.md`](../evidence/fix-redoc-api-docs.md).
+- [x] Deshabilitar el esquema OpenAPI (`openapi`, `/openapi.json`).
+      Validado por [`tests/test_docs_disabled.py`](../../tests/test_docs_disabled.py)
+      y [`security/evidence/fix-openapi.md`](../evidence/fix-openapi.md).
+- [x] Cabeceras de seguridad (10, una por commit), en `security_headers.py`.
+      Validado por [`tests/test_security_headers.py`](../../tests/test_security_headers.py)
+      y [`security/evidence/`](../evidence/) (`fix-header-*.md`).
+
+Validación en vivo del stack tras las correcciones:
+[`security/evidence/live-validation.md`](../evidence/live-validation.md).
+
+Hallazgos de LDAP evaluados y **aceptados como riesgo** (no aplican a este repo):
+
+- [x] **`untrusted-root-certificate` (low):** es la **CA propia** del laboratorio
+      (generada por `setup.sh`). El cliente `auth` sí confía en ella
+      (`Tls(validate=CERT_REQUIRED, ca_certs_file=/secrets/ldap_ca.crt)`); fuera
+      del entorno aparece como "desconocida". No es explotable en este contexto.
+- [x] **`tls-version` (info, TLS 1.2):** TLS 1.2 sigue siendo seguro y
+      recomendado. Forzar TLS 1.3 requiere configuración **del servidor slapd**
+      (`olcTLSProtocolMin: 0x0304` en OpenLDAP), que vive en el `docker-compose.yml`
+      del proyecto (fuera de este repositorio). Se documenta como mejora opcional.
+
+> Tras las correcciones hay que reconstruir la imagen
+> (`docker compose build auth && docker compose up -d auth`) y volver a lanzar
+> Nuclei para confirmar que los hallazgos desaparecen.
