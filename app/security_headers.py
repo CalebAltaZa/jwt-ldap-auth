@@ -18,6 +18,7 @@ SECURITY_HEADERS: dict[bytes, bytes] = {
     b"cross-origin-resource-policy": b"same-origin",
     b"permissions-policy": b"geolocation=(), microphone=(), camera=()",
     b"content-security-policy": b"default-src 'none'; frame-ancestors 'none'",
+    b"strict-transport-security": b"max-age=31536000; includeSubDomains",
 }
 
 
