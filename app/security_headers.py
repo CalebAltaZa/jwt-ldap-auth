@@ -17,6 +17,7 @@ SECURITY_HEADERS: dict[bytes, bytes] = {
     b"cross-origin-embedder-policy": b"require-corp",
     b"cross-origin-resource-policy": b"same-origin",
     b"permissions-policy": b"geolocation=(), microphone=(), camera=()",
+    b"content-security-policy": b"default-src 'none'; frame-ancestors 'none'",
 }
 
 
