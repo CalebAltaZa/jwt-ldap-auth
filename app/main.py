@@ -18,6 +18,7 @@ app = FastAPI(
     # Documentacion interactiva deshabilitada por defecto (DOCS_ENABLED=1 para
     # habilitarla en desarrollo). Evita exponer el esquema de la API.
     docs_url="/docs" if DOCS_ENABLED else None,
+    redoc_url="/redoc" if DOCS_ENABLED else None,
 )
 
 configure_access_logger("/var/log/auth/access.log")
