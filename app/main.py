@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from .accesslog import AccessLogMiddleware, configure_access_logger
 from .config import DOCS_ENABLED, JWT_AUDIENCE, JWT_EXPIRE_MINUTES, JWT_ISSUER
 from .security import authenticate_ldap, create_access_token
+from .security_headers import SecurityHeadersMiddleware
 
 app = FastAPI(
     title="LDAP Auth API",
@@ -24,6 +25,7 @@ app = FastAPI(
 
 configure_access_logger("/var/log/auth/access.log")
 app.add_middleware(AccessLogMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
