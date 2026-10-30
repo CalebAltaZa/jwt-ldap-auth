@@ -14,6 +14,7 @@ SECURITY_HEADERS: dict[bytes, bytes] = {
     b"referrer-policy": b"no-referrer",
     b"x-permitted-cross-domain-policies": b"none",
     b"cross-origin-opener-policy": b"same-origin",
+    b"cross-origin-embedder-policy": b"require-corp",
 }
 
 
