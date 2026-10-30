@@ -12,6 +12,7 @@ SECURITY_HEADERS: dict[bytes, bytes] = {
     b"x-content-type-options": b"nosniff",
     b"x-frame-options": b"DENY",
     b"referrer-policy": b"no-referrer",
+    b"x-permitted-cross-domain-policies": b"none",
 }
 
 
